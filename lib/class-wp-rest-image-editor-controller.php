@@ -147,6 +147,12 @@ class WP_REST_Image_Editor_Controller extends WP_REST_Controller {
 			return new WP_Error( 'rest_image_not_edited', $error, array( 'status' => 400 ) );
 		}
 
+		if ( ! file_exists( $image_file ) ) {
+			// If the file doesn't exist, attempt a URL fopen on the src link.
+			// This can occur with certain file replication plugins.
+			$image_file = _load_image_to_edit_path( $attachment_id );
+		}
+
 		$image_editor = wp_get_image_editor( $image_file );
 
 		if ( is_wp_error( $image_editor ) ) {
